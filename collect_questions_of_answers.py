@@ -22,9 +22,12 @@ def get_data(path, answer_id, question_id):
 
 SITE = StackAPI('stackoverflow', key=apikey)
 users = os.listdir('Data/Raw/answers')
+users.sort()
+cnt = 0
 for user in users:
+    cnt += 1
     user_id = user.split('.')[0]
-    print(f"Collecting Data for User: {user_id}")
+    print(f"#{cnt} : Collecting Data for User: {user_id}")
     path = 'Data/Raw/questions_of_answers/' + user_id + '/'
     if not os.path.exists(path):
         os.makedirs(path)
@@ -32,7 +35,6 @@ for user in users:
         answers = json.load(json_file)
     ls = os.listdir(path)
     for item in answers['items']:
-        print("Ans ID:", item['answer_id'])
         allques = os.listdir('Data/Raw/all_questions/')
         if str(item['answer_id']) + '.json' not in ls:
             if str(item['question_id']) + '.json' not in allques:
@@ -41,9 +43,7 @@ for user in users:
                 with open('Data/Raw/all_questions/' + str(item['question_id']) + '.json',
                           encoding='utf-8') as json_file:
                     data = json.load(json_file)
-                with open('Data/Raw/questions_of_answers/' + str(item['answer_id']) + '.json', 'w',
+                with open(path + str(item['answer_id']) + '.json', 'w',
                           encoding='utf-8') as outfile:
                     json.dump(data, outfile, ensure_ascii=False, indent=4)
                 print("From previous save!!!")
-        else:
-            print('Already Collected!')
