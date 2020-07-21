@@ -9,10 +9,10 @@ from Data.apikey import access_token as apikey
 def get_data(user_id):
     try:
         print(user, ":", end=" ")
-        questions = SITE.fetch(f'users/{user}/questions', filter='withbody')
+        questions = SITE.fetch(f'users/{user_id}/questions', filter='withbody')
         print(len(questions['items']))
         if len(questions['items']) > 0:
-            with open('Data/Raw/questions/' + str(user) + '.json', 'w', encoding='utf-8') as outfile:
+            with open('Data/Raw/questions/' + str(user_id) + '.json', 'w', encoding='utf-8') as outfile:
                 json.dump(questions, outfile, ensure_ascii=False, indent=4)
     except:
         print("Something went wrong!\nUser:", user_id)

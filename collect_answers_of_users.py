@@ -8,11 +8,11 @@ from Data.apikey import access_token as apikey
 
 def get_data(user_id):
     try:
-        print(user, ":", end=" ")
-        answers = SITE.fetch(f'users/{user}/answers', filter='withbody')
+        print(user_id, ":", end=" ")
+        answers = SITE.fetch(f'users/{user_id}/answers', filter='withbody')
         print(len(answers['items']))
         if len(answers['items']) > 0:
-            with open('Data/Raw/answers/' + str(user) + '.json', 'w', encoding='utf-8') as outfile:
+            with open('Data/Raw/answers/' + str(user_id) + '.json', 'w', encoding='utf-8') as outfile:
                 json.dump(answers, outfile, ensure_ascii=False, indent=4)
     except:
         print("Something went wrong!\nUser:", user_id)
