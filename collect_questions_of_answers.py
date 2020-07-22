@@ -9,7 +9,7 @@ from Data.apikey import access_token as apikey
 def get_data(path, answer_id, question_id):
     try:
         question = SITE.fetch(f'questions/{question_id}', filter='withbody')
-        print(question)
+        print(question['items'][0]['tags'])
         with open(path + str(answer_id) + '.json', 'w', encoding='utf-8') as outfile:
             json.dump(question, outfile, ensure_ascii=False, indent=4)
         with open('Data/Raw/all_questions/' + str(question_id) + '.json', 'w', encoding='utf-8') as outfile:
@@ -23,11 +23,9 @@ def get_data(path, answer_id, question_id):
 SITE = StackAPI('stackoverflow', key=apikey)
 users = os.listdir('Data/Raw/answers')
 users.sort()
-cnt = 0
-for user in users:
-    cnt += 1
+for user in users[68:]:
     user_id = user.split('.')[0]
-    print(f"#{cnt} : Collecting Data for User: {user_id}")
+    print(f"Collecting Data for User: {user_id}")
     path = 'Data/Raw/questions_of_answers/' + user_id + '/'
     if not os.path.exists(path):
         os.makedirs(path)
