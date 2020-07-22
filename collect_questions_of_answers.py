@@ -23,25 +23,29 @@ def get_data(path, answer_id, question_id):
 SITE = StackAPI('stackoverflow', key=apikey)
 users = os.listdir('Data/Raw/answers')
 users.sort()
-for user in users[68:]:
+df = pd.read_csv('Data/user_list.csv')
+accepted_users = [str(x) for x in list(df.user_id)]
+
+for user in users[94:]:
     user_id = user.split('.')[0]
-    print(f"Collecting Data for User: {user_id}")
-    path = 'Data/Raw/questions_of_answers/' + user_id + '/'
-    if not os.path.exists(path):
-        os.makedirs(path)
-    with open('Data/Raw/answers/' + user, encoding='utf-8') as json_file:
-        answers = json.load(json_file)
-    ls = os.listdir(path)
-    for item in answers['items']:
-        allques = os.listdir('Data/Raw/all_questions/')
-        if str(item['answer_id']) + '.json' not in ls:
-            if str(item['question_id']) + '.json' not in allques:
-                get_data(path, item['answer_id'], item['question_id'])
-            else:
-                with open('Data/Raw/all_questions/' + str(item['question_id']) + '.json',
-                          encoding='utf-8') as json_file:
-                    data = json.load(json_file)
-                with open(path + str(item['answer_id']) + '.json', 'w',
-                          encoding='utf-8') as outfile:
-                    json.dump(data, outfile, ensure_ascii=False, indent=4)
-                print("From previous save!!!")
+    if user_id in accepted_users:
+        print(f"Collecting Data for User: {user_id}")
+        path = 'Data/Raw/questions_of_answers/' + user_id + '/'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        with open('Data/Raw/answers/' + user, encoding='utf-8') as json_file:
+            answers = json.load(json_file)
+        ls = os.listdir(path)
+        for item in answers['items']:
+            allques = os.listdir('Data/Raw/all_questions/')
+            if str(item['answer_id']) + '.json' not in ls:
+                if str(item['question_id']) + '.json' not in allques:
+                    get_data(path, item['answer_id'], item['question_id'])
+                else:
+                    with open('Data/Raw/all_questions/' + str(item['question_id']) + '.json',
+                              encoding='utf-8') as json_file:
+                        data = json.load(json_file)
+                    with open(path + str(item['answer_id']) + '.json', 'w',
+                              encoding='utf-8') as outfile:
+                        json.dump(data, outfile, ensure_ascii=False, indent=4)
+                    print("From previous save!!!")

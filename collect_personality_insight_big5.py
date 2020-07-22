@@ -30,22 +30,30 @@ personality_insights.set_service_url('https://api.us-south.personality-insights.
 
 users = os.listdir('Data/Raw/answers')
 users.sort()
-for user in users[1:]:
+for user in users:
     user_texts = ""
     print(user)
-    with open('Data/Raw/answers/' + user, encoding='utf-8') as json_file:
-        answers = json.load(json_file)
-    for item in answers['items']:
-        user_texts += clean_text(item['body'])
 
-    q_path = 'Data/Raw/questions/' + user
-    if os.path.exists(q_path):
-        with open(q_path, encoding='utf-8') as json_file:
-            questions = json.load(json_file)
-        for item in questions['items']:
+    personality_path = 'Data/Raw/Personality_Data/'
+    ls = os.listdir(personality_path)
+
+    if not os.path.exists(personality_path + user):
+        print("Collecting data of user:", user.split('.')[0])
+        with open('Data/Raw/answers/' + user, encoding='utf-8') as json_file:
+            answers = json.load(json_file)
+        for item in answers['items']:
             user_texts += clean_text(item['body'])
 
-    profile = personality_insights.profile(user_texts, content_type='text/plain', accept_language='en',
-                                           accept='application/json').get_result()
-    with open('Data/Raw/Personality_Data/' + user, 'w', encoding='utf-8') as outfile:
-        json.dump(profile, outfile, ensure_ascii=False, indent=4)
+        q_path = 'Data/Raw/questions/' + user
+        if os.path.exists(q_path):
+            with open(q_path, encoding='utf-8') as json_file:
+                questions = json.load(json_file)
+            for item in questions['items']:
+                user_texts += clean_text(item['body'])
+
+        profile = personality_insights.profile(user_texts, content_type='text/plain', accept_language='en',
+                                               accept='application/json').get_result()
+        with open('Data/Raw/Personality_Data/' + user, 'w', encoding='utf-8') as outfile:
+            json.dump(profile, outfile, ensure_ascii=False, indent=4)
+    else:
+        print("Already collected!")
