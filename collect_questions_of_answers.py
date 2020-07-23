@@ -9,15 +9,17 @@ from Data.apikey import access_token as apikey
 def get_data(path, answer_id, question_id):
     try:
         question = SITE.fetch(f'questions/{question_id}', filter='withbody')
-        print(question['items'][0]['tags'])
+        #print(question['items'][0]['tags'])
         with open(path + str(answer_id) + '.json', 'w', encoding='utf-8') as outfile:
             json.dump(question, outfile, ensure_ascii=False, indent=4)
         with open('Data/Raw/all_questions/' + str(question_id) + '.json', 'w', encoding='utf-8') as outfile:
             json.dump(question, outfile, ensure_ascii=False, indent=4)
+        return True
     except:
         print("Something went wrong!\nUser:", user_id)
         with open("Data/Error/" + str(user_id) + '_' + str(answer_id) + ".txt", "w") as f:
             f.write("Something went wrong!")
+        return False
 
 
 SITE = StackAPI('stackoverflow', key=apikey)
@@ -25,8 +27,9 @@ users = os.listdir('Data/Raw/answers')
 users.sort()
 df = pd.read_csv('Data/user_list.csv')
 accepted_users = [str(x) for x in list(df.user_id)]
+ok = True
 
-for user in users[94:]:
+for user in users[111:]:
     user_id = user.split('.')[0]
     if user_id in accepted_users:
         print(f"Collecting Data for User: {user_id}")
@@ -40,7 +43,7 @@ for user in users[94:]:
             allques = os.listdir('Data/Raw/all_questions/')
             if str(item['answer_id']) + '.json' not in ls:
                 if str(item['question_id']) + '.json' not in allques:
-                    get_data(path, item['answer_id'], item['question_id'])
+                    ok = get_data(path, item['answer_id'], item['question_id'])
                 else:
                     with open('Data/Raw/all_questions/' + str(item['question_id']) + '.json',
                               encoding='utf-8') as json_file:
@@ -49,3 +52,7 @@ for user in users[94:]:
                               encoding='utf-8') as outfile:
                         json.dump(data, outfile, ensure_ascii=False, indent=4)
                     print("From previous save!!!")
+            if not ok:
+                break
+        if not ok:
+            break
