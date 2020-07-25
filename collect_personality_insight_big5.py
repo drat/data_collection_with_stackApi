@@ -4,10 +4,10 @@ import json
 import string
 import os
 from Data.apikey import ibm_key as api_key
+import re
 
 
 def clean_text(text):
-    import re
     clean = re.compile('<pre>([\s\S]*?)</pre>')
     text = re.sub(clean, '', text)
     clean = re.compile('<code>([\s\S]*?)</code>')
