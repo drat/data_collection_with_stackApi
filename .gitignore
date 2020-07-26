@@ -1,8 +1,10 @@
 .idea/
 Data/
+corpora/
 venv/
 00.py
 text_cleaning.py
 tmp.py
 filter_users.py
 22.py
+33.py
