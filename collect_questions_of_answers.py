@@ -37,7 +37,7 @@ for i in q_list:
     x = str(i.split('.')[0])
     check_all_ques[x] = q_path + i
 
-for user in users[222:]:
+for user in users[267:]:
     user_id = user.split('.')[0]
     if user_id in accepted_users:
         print(f"Collecting Data for User: {user_id}")
