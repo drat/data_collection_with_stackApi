@@ -7,9 +7,25 @@ import pandas as pd
 from random import choice
 from Data.apikey import access_token as apikey
 
+proxies = []
+SITE = StackAPI('stackoverflow')
+
+
+def init():
+    global SITE
+    p = choice(proxies)
+    proxy_dict = {"http": p, "https": p}
+
+    try:
+        SITE = StackAPI('stackoverflow', key=apikey, proxy=proxy_dict)
+    except:
+        init()
+
 
 def get_data(path, answer_id, question_id):
     global check_all_ques
+    global proxies
+    global SITE
     try:
         question = SITE.fetch(f'questions/{question_id}', filter='withbody')
         #print(question['items'][0]['tags'])
@@ -23,7 +39,8 @@ def get_data(path, answer_id, question_id):
         print("Something went wrong!\nUser:", user_id)
         with open("Data/Error/" + str(user_id) + '_' + str(answer_id) + ".txt", "w") as f:
             f.write("Something went wrong!")
-        return False
+        init()
+        return True
 
 
 def make_proxy_list():
@@ -34,10 +51,8 @@ def make_proxy_list():
         proxies.append('http://' + a[2] + ':' + a[3] + '@' + a[0] + ':' + a[1])
 
 
-proxies = []
 make_proxy_list()
-proxy_dict = {"http": proxies[1], "https": proxies[1]}
-SITE = StackAPI('stackoverflow', key=apikey, proxy=proxy_dict)
+init()
 users = os.listdir('Data/Raw/answers')
 users.sort()
 df = pd.read_csv('Data/user_list.csv')
