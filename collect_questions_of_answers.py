@@ -2,12 +2,24 @@ from stackapi import StackAPI
 import json
 from time import sleep
 import os
+import requests
 import pandas as pd
+from random import choice
 from Data.apikey import access_token as apikey
+
+proxies = []
+SITE = StackAPI('stackoverflow')
+
+
+def init():
+    global SITE
+    SITE = StackAPI('stackoverflow', key=apikey)
 
 
 def get_data(path, answer_id, question_id):
     global check_all_ques
+    global proxies
+    global SITE
     try:
         question = SITE.fetch(f'questions/{question_id}', filter='withbody')
         #print(question['items'][0]['tags'])
@@ -24,7 +36,7 @@ def get_data(path, answer_id, question_id):
         return False
 
 
-SITE = StackAPI('stackoverflow', key=apikey)
+init()
 users = os.listdir('Data/Raw/answers')
 users.sort()
 df = pd.read_csv('Data/user_list.csv')
@@ -39,12 +51,13 @@ for i in q_list:
 
 total_cnt = 0
 api_call_cnt = 0
-index = 409
+index = 0
 
-for user in users[409:]:
+for user in users:
     user_id = user.split('.')[0]
     if user_id in accepted_users:
         print(f"#Index: {index} ---> Collecting Data for User: {user_id}")
+        print(f"Total: {total_cnt} >--< API Calls: {api_call_cnt}")
         index += 1
         path = 'Data/Raw/questions_of_answers/' + user_id + '/'
         if not os.path.exists(path):
@@ -53,8 +66,8 @@ for user in users[409:]:
             answers = json.load(json_file)
         ls = os.listdir(path)
         for item in answers['items']:
-            total_cnt += 1
             if str(item['answer_id']) + '.json' not in ls:
+                total_cnt += 1
                 if not check_all_ques.get(str(item['question_id'])):
                     ok = get_data(path, item['answer_id'], item['question_id'])
                     api_call_cnt += 1
