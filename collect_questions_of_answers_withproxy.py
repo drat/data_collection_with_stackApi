@@ -18,6 +18,7 @@ def init():
 
     try:
         SITE = StackAPI('stackoverflow', key=apikey, proxy=proxy_dict)
+        return
     except:
         init()
 
@@ -40,6 +41,7 @@ def get_data(path, answer_id, question_id):
         with open("Data/Error/" + str(user_id) + '_' + str(answer_id) + ".txt", "w") as f:
             f.write("Something went wrong!")
         init()
+        get_data(path, answer_id, question_id)
         return True
 
 
